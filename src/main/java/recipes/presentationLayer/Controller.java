@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api")
 public class Controller {
     @Autowired
     RecipeService recipeService;
@@ -32,24 +33,24 @@ public class Controller {
     PasswordEncoder encoder;
 
 
-    @PostMapping("/api/recipe/new")
+    @PostMapping("/recipe/new")
     public IdObject postRecipe(@RequestBody Recipe recipe, @AuthenticationPrincipal UserDetails details) {
         recipe.setEmail(details.getUsername());
         return new IdObject(recipeService.save(recipe).getId());
     }
 
-    @GetMapping("/api/recipe/{id}")
+    @GetMapping("/recipe/{id}")
     public Recipe getRecipe(@PathVariable Long id) {
         Optional<Recipe> res = recipeService.findRecipeById(id);
         return res.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/api/recipe/all")
+    @GetMapping("/recipe/all")
     public List<Recipe> getAllRecipes() {
         return recipeService.findAll();
     }
 
-    @GetMapping("/api/recipe/search")
+    @GetMapping("/recipe/search")
     public List<Recipe> searchRecipe(@RequestParam Map<String, String> params) {
         String name = params.get("name");
         String category = params.get("category");
@@ -68,7 +69,7 @@ public class Controller {
     }
 
 
-    @DeleteMapping("/api/recipe/{id}")
+    @DeleteMapping("/recipe/{id}")
     public ResponseEntity<String> deleteRecipe(@PathVariable Long id, @AuthenticationPrincipal UserDetails details) {
         Optional<Recipe> recipe = recipeService.findRecipeById(id);
         if (recipe.isPresent()) {
@@ -83,7 +84,7 @@ public class Controller {
         }
     }
 
-    @PutMapping("/api/recipe/{id}")
+    @PutMapping("/recipe/{id}")
     public ResponseEntity<String> putRecipe(
             @PathVariable Long id,
             @Valid @RequestBody Recipe recipe,
@@ -105,7 +106,7 @@ public class Controller {
         }
     }
 
-    @PostMapping("/api/register")
+    @PostMapping("/register")
     public void register(@RequestBody @Valid User user) {
         String email = user.getEmail();
         userDetailsService.findUserByEmail(email)
@@ -116,7 +117,7 @@ public class Controller {
         userDetailsService.save(user);
     }
 
-    @GetMapping("/api/allusers")
+    @GetMapping("/allusers")
     public List<User> allUsers() {
         return userDetailsService.findAll();
     }
